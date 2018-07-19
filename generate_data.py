@@ -39,21 +39,21 @@ def generate_true_values(num_trials, dt, x_init, y_init, x_y_only = False):
 # x = generate_true_values(10,0.1,5,5,x_y_only=True)
 # print(x)
 
-def generate_noisy_values(num_trials,dt,std_dev,x_init,y_init):
+def generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init):
     sensor_values = np.zeros((2,num_trials))
     x = generate_true_values(num_trials, dt, x_init, y_init, x_y_only=True)
     i = 0
     for i in range(0,num_trials):
-        sensor_values[0,[i]] = np.random.normal(0,std_dev) + x[0,[i]]
-        sensor_values[1,[i]] = np.random.normal(0,std_dev) + x[1,[i]]
+        sensor_values[0,[i]] = np.random.normal(0,std_dev_x) + x[0,[i]]
+        sensor_values[1,[i]] = np.random.normal(0,std_dev_y) + x[1,[i]]
         i += 1
     return sensor_values
 
 # y = generate_noisy_values(10, 0.1,5,5)
 # print(y)
 
-def plot_noisy(num_trials, dt, std_dev, x_init, y_init):
-    noisy_data = generate_noisy_values(num_trials, dt, std_dev, x_init, y_init)
+def plot_noisy(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init):
+    noisy_data = generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init)
     # points = []
 
     plt.figure()
@@ -62,4 +62,4 @@ def plot_noisy(num_trials, dt, std_dev, x_init, y_init):
     # it = np.nditer(noisy_data, flags = ['c_index'])
     # while not it.finished:
 
-plot_noisy(1000,0.1,1,5,5)
+plot_noisy(1000,0.1,2,2,5,5)
