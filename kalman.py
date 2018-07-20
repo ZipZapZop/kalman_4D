@@ -55,26 +55,36 @@ print(np.shape(x))
 print(x)
 
 def plot_kalman(num_trials, x_init, y_init):
-    fig = plt.figure()
+    # plt.figure(num=None,figsize=(12, 10), dpi=80, facecolor='w', edgecolor='k')
+    fig = plt.figure(num=None,figsize=(12, 10), dpi=100)
     states = kalman_filter(num_trials, x_init, y_init) # 4 x num_trials
     estimates = generate_data.generate_true_values(num_trials,0.001,x_init,y_init,x_y_only=False)
 
-    ax1 = fig.add_subplot(211)  # x values
+    ax1 = fig.add_subplot(221)  # x values
     plt.plot(states[0],label = 'Predicted values')
     plt.plot(estimates[0],label = 'Estimated values')
     handles, labels = ax1.get_legend_handles_labels()
     ax1.set_title('x position')
 
-    ax2 = fig.add_subplot(212)  # y values
+    ax2 = fig.add_subplot(222)  # y values
     plt.plot(states[1])
     plt.plot(estimates[1])
     # handles and labels for ax2 are same as those for ax1
     ax2.set_title('y position')
 
+    ax3 = fig.add_subplot(223) # v_x values
+    plt.plot(states[2])
+    plt.plot(estimates[2])
+    ax3.set_title('v_x values')
+
+    ax4 = fig.add_subplot(224) # v_x values
+    plt.plot(states[3])
+    plt.plot(estimates[3])
+    ax4.set_title('v_y values')
+
     fig.legend(handles, labels)
-    fig.subplots_adjust(hspace=.5)
-
-
+    fig.subplots_adjust(hspace=.2,wspace=.2)
+    
     plt.show()
 
 plot_kalman(1000,2,2)
