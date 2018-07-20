@@ -56,14 +56,11 @@ def generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init):
 
 def plot_noisy(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init):
     noisy_data = generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init)
-    # points = []
 
     plt.figure()
     plt.plot(noisy_data[0], noisy_data[1])
     plt.show()
     # it = np.nditer(noisy_data, flags = ['c_index'])
     # while not it.finished:
-
-
 
 # plot_noisy(1000,0.1,2,2,5,5)
