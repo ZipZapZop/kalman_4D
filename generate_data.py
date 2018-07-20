@@ -1,13 +1,13 @@
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
-''' Computes x, y, v_x, v_y assuming no acceleration and constant initial velocities of 1.
-    Returns as a numpy array '''
-    
+
 def generate_true_values(num_trials, dt, x_init, y_init, x_y_only = False):
+    """ Computes x, y, v_x, v_y assuming no acceleration and constant initial velocities of 1.
+    Returns as a numpy array """
     x = np.zeros((4, num_trials))
 
-    # init state vector
+    # initialize state vector
     init = np.array([x_init, y_init, 2, 2]) # assuming constant vel of 2
     init = init.reshape((-1,1))
     x[:, [0]] = init
@@ -18,7 +18,7 @@ def generate_true_values(num_trials, dt, x_init, y_init, x_y_only = False):
 
     time_int = dt*np.linspace(1, num_trials, num_trials)
     it = np.nditer(time_int, flags = ['c_index'])
-    it.iternext() # continue past init values
+    it.iternext() # continue past initial values
     while not it.finished:
         x[:, [it.index]] = np.dot(A,x[:, [it.index - 1]])
         it.iternext()
@@ -36,10 +36,8 @@ def generate_true_values(num_trials, dt, x_init, y_init, x_y_only = False):
 
     return pos_only
 
-# x = generate_true_values(10,0.1,5,5,x_y_only=False)
-# print(x)
-
 def generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init):
+    """ Simulates noisy sensor measurements with normally distributed noise estimates."""
     sensor_values = np.zeros((4,num_trials))
     x = generate_true_values(num_trials, dt, x_init, y_init, x_y_only=False)
     i = 0
@@ -50,17 +48,3 @@ def generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init):
         sensor_values[3,[i]] = np.random.normal(0,std_dev_y) + x[3,[i]]
         i += 1
     return sensor_values
-
-# y = generate_noisy_values(10, 0.1,1,1,5,5)
-# print(y)
-
-def plot_noisy(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init):
-    noisy_data = generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init)
-
-    plt.figure()
-    plt.plot(noisy_data[0], noisy_data[1])
-    plt.show()
-    # it = np.nditer(noisy_data, flags = ['c_index'])
-    # while not it.finished:
-
-# plot_noisy(1000,0.1,2,2,5,5)

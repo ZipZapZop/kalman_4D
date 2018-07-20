@@ -3,10 +3,17 @@ import generate_data
 import matplotlib.pyplot as plt
 
 def kalman_filter(num_trials, x_init, y_init):
+    """ kalman_filter() applies a Kalman filter on the simulated noisy output from generate_data.py. 
+    The velocity is held constant at 2 m/s. This value can be changed in the generate_values.py source. 
+    There is assumed to be no noise in the prediction step of the filter and hence, the process noise covariance matrix
+    and the predicted state noise matrix are set to zero matrices.
+    Measurements are taken at every 0.001 second (dt). This can be changed in the kalman.py source.
+    """
+
     dt = 0.001
     # std_dev_x and std_dev_y of sensors is 3m
     # generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init)
-    noisy_readings = generate_data.generate_noisy_values(num_trials, dt, 2, 2, x_init,y_init)   # 4xnum_trials
+    noisy_readings = generate_data.generate_noisy_values(num_trials, dt, 2, 2, x_init,y_init)   
 
     A = np.array([[1, 0, dt, 0],
                 [0, 1, 0, dt],
@@ -16,7 +23,7 @@ def kalman_filter(num_trials, x_init, y_init):
     H = np.eye(4)
 
     # Init var of x and y are large because uncertain of original position.
-    # Init var of vel_x and vel_y are 0.1.
+    # Init var o''' vel_x and vel_y are 0.1.
     # All covariances are equal to 0 as each state var is assumed independent.
 
     P = np.array([ [500, 0, 0, 0],
@@ -32,11 +39,12 @@ def kalman_filter(num_trials, x_init, y_init):
                     [0, 0, 0, 0.01]])
     
     state = np.zeros((4, num_trials))
-    # init state
+    
+    # initialize state
     state[:, [0]] = np.array([[0, 0, x_init, y_init]]).T
 
     for i in range(1, num_trials):
-        state[:,[i]] = np.dot(A,state[:, [i - 1]]) + 0 # 0 is for w
+        state[:,[i]] = np.dot(A,state[:, [i - 1]]) + np.zeros((4,1)) # the predicted state noise is set to 0
         P = np.dot(np.dot(A,P),A.T) + Q
 
         # gain
@@ -44,20 +52,19 @@ def kalman_filter(num_trials, x_init, y_init):
         K_denom = np.dot(np.dot(H,P),H.T) + R
         K = np.dot(K_num,np.linalg.inv(K_denom))
 
+        # Update
         innovation = noisy_readings[:,[i]] - np.dot(H,state[:,[i-1]])
         state[:,[i]] = state[:,[i]]+ np.vstack(np.dot(K,innovation))
-        P = np.dot(np.eye(4) - np.dot(K,H),P)
+        P = np.dot(np.eye(4) - np.dot(K,H),P) + np.zeros((4,4))
 
     return state
 
-x = kalman_filter(10,2,2)
-print(np.shape(x))
-print(x)
-
 def plot_kalman(num_trials, x_init, y_init):
-    # plt.figure(num=None,figsize=(12, 10), dpi=80, facecolor='w', edgecolor='k')
+    """ Calls kalman_filter() and plots the prediction and correction at every time interval
+    for both position and velocity. """
+
     fig = plt.figure(num=None,figsize=(12, 10), dpi=100)
-    states = kalman_filter(num_trials, x_init, y_init) # 4 x num_trials
+    states = kalman_filter(num_trials, x_init, y_init)
     estimates = generate_data.generate_true_values(num_trials,0.001,x_init,y_init,x_y_only=False)
 
     ax1 = fig.add_subplot(221)  # x values
@@ -69,22 +76,22 @@ def plot_kalman(num_trials, x_init, y_init):
     ax2 = fig.add_subplot(222)  # y values
     plt.plot(states[1])
     plt.plot(estimates[1])
-    # handles and labels for ax2 are same as those for ax1
     ax2.set_title('y position')
 
     ax3 = fig.add_subplot(223) # v_x values
     plt.plot(states[2])
     plt.plot(estimates[2])
-    ax3.set_title('v_x values')
+    ax3.set_title('$v_x$ values')
 
-    ax4 = fig.add_subplot(224) # v_x values
+    ax4 = fig.add_subplot(224) # v_y values
     plt.plot(states[3])
     plt.plot(estimates[3])
-    ax4.set_title('v_y values')
+    ax4.set_title('$v_y$ values')
 
-    fig.legend(handles, labels)
+    fig.legend(handles, labels)     # handles and labels for ax2, ax3, ax4 are same as for ax1
     fig.subplots_adjust(hspace=.2,wspace=.2)
     
     plt.show()
 
+# num_trials=1000, x_init=2, y_init=2
 plot_kalman(1000,2,2)
