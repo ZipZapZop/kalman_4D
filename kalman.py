@@ -57,20 +57,23 @@ print(x)
 def plot_kalman(num_trials, x_init, y_init):
     fig = plt.figure()
     states = kalman_filter(num_trials, x_init, y_init) # 4 x num_trials
-    time_ints = np.linspace(1, num_trials,num_trials).tolist()
     estimates = generate_data.generate_true_values(num_trials,0.001,x_init,y_init,x_y_only=False)
 
-    ax1 = plt.subplot(211)  # x values
+    ax1 = fig.add_subplot(211)  # x values
     plt.plot(states[0],label = 'Predicted values')
     plt.plot(estimates[0],label = 'Estimated values')
     handles, labels = ax1.get_legend_handles_labels()
+    ax1.set_title('x position')
 
-    ax2 = plt.subplot(212)  # y values
+    ax2 = fig.add_subplot(212)  # y values
     plt.plot(states[1])
     plt.plot(estimates[1])
     # handles and labels for ax2 are same as those for ax1
-    
+    ax2.set_title('y position')
+
     fig.legend(handles, labels)
+    fig.subplots_adjust(hspace=.5)
+
 
     plt.show()
 
