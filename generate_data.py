@@ -3,7 +3,7 @@ import itertools
 import matplotlib.pyplot as plt
 
 def generate_true_values(num_trials, dt, x_init, y_init, x_y_only = False):
-    """ Computes x, y, v_x, v_y assuming no acceleration and constant initial velocities of 1.
+    """ Computes x, y, v_x, v_y assuming no acceleration and constant initial velocities of 2.
     Returns as a numpy array """
     x = np.zeros((4, num_trials))
 
