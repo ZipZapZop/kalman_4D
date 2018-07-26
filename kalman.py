@@ -14,7 +14,7 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
     dt_sq = dt**2
     # std_dev_x and std_dev_y of sensors is 3m
     # generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init)
-    noisy_readings = generate_data.generate_noisy_values(num_trials, dt, 2, 2, x_init,y_init, a_x, a_y)   
+    noisy_readings = generate_data.generate_noisy_values(num_trials, dt, 20, 20, x_init,y_init, a_x, a_y)   
 
     A = np.array([[1, 0, dt, 0],
                 [0, 1, 0, dt],
@@ -36,6 +36,8 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
                     [0, 0, 0.1, 0],
                     [0, 0, 0, 0.1]])
     
+    variances = np.zeros((4,num_trials))
+
     Q = np.zeros(4) # assuming no process noise
 
     R = np.array([ [9, 0, 0, 0],
@@ -65,14 +67,25 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
         state[:,[i]] = state[:,[i]]+ np.vstack(np.dot(K,innovation))
         P = np.dot(np.eye(4) - np.dot(K,H),P) + np.zeros((4,4))
 
-    return state
+        # save variances at each step
+        varianceToSave = np.array([[P[0,0]],
+                           [P[1,1]],
+                           [P[2,2]],
+                           [P[3,3]]])
+        variances[:,[i]] = varianceToSave
 
-def plot_kalman(num_trials, x_init, y_init, a_x, a_y):
+        
+    return state, variances
+
+def plot_states(num_trials, x_init, y_init, a_x, a_y):
     """ Calls kalman_filter() and plots the prediction and correction at every time interval
-    for both position and velocity. """
+    for both position and velocity. In another figure, plots the variances of each state 
+    variable over time. The initial covariances are 0 in this model, and therefore are 
+    not plotted."""
 
-    fig = plt.figure(num=None,figsize=(12, 10), dpi=100)
-    states = kalman_filter(num_trials, x_init, y_init, a_x, a_y)
+    states, variances = kalman_filter(num_trials, x_init, y_init, a_x, a_y)
+    
+    fig = plt.figure(num=1,figsize=(12, 10), dpi=100)
     estimates = generate_data.generate_true_values(num_trials,0.001,x_init,y_init, a_x, a_y)
 
     ax1 = fig.add_subplot(221)  # x values
@@ -101,5 +114,34 @@ def plot_kalman(num_trials, x_init, y_init, a_x, a_y):
     
     plt.show()
 
+
+def plot_variances(num_trials, x_init, y_init, a_x, a_y):
+    states, variances = kalman_filter(num_trials, x_init, y_init, a_x, a_y)
+
+    fig2 = plt.figure(num=2,figsize=(12,10),dpi=100)
+
+    bx1 = fig2.add_subplot(221)
+    plt.plot(variances[0])
+    plt.yscale('log')
+    bx1.set_title('${\sigma_x}^2$')
+    
+    bx2 = fig2.add_subplot(222, sharex=bx1)
+    plt.plot(variances[1])
+    plt.yscale('log')
+    bx2.set_title('${\sigma_y}^2$')
+
+    bx3 = fig2.add_subplot(223, sharex=bx1)
+    plt.plot(variances[2])
+    plt.yscale('log')
+    bx3.set_title('${\sigma_{v_x}}^2$')
+
+    bx4 = fig2.add_subplot(224, sharex=bx1)
+    plt.plot(variances[3])
+    plt.yscale('log')
+    bx4.set_title('${\sigma_{v_y}}^2$')
+
+    plt.show()
+
+
 # num_trials=1000, x_init=2, y_init=2, a_x = a_y = 0.1
-plot_kalman(1000,2,2, 2, 2)
+plot_variances(1000,2,2, 2, 2)
