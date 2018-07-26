@@ -23,7 +23,7 @@ def kalman_filter(num_trials, x_init, y_init):
     H = np.eye(4)
 
     # Init var of x and y are large because uncertain of original position.
-    # Init var o''' vel_x and vel_y are 0.1.
+    # Vel_x and vel_y are 0.1.
     # All covariances are equal to 0 as each state var is assumed independent.
 
     P = np.array([ [500, 0, 0, 0],
