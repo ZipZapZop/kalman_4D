@@ -3,7 +3,7 @@ import generate_data
 import matplotlib.pyplot as plt
 
 def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
-    """ kalman_filter() applies a Kalman filter on the simulated noisy output from generate_data.py. 
+    """ kalman_filter() applies a basic Kalman filter on the simulated noisy output from generate_data.py. 
     The velocity is held constant at 2 m/s. This value can be changed in the generate_values.py source. 
     There is assumed to be no noise in the prediction step of the filter and hence, the process noise covariance matrix
     and the predicted state noise matrix are set to zero matrices.
@@ -79,11 +79,9 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
 
 def plot_states(num_trials, x_init, y_init, a_x, a_y):
     """ Calls kalman_filter() and plots the prediction and correction at every time interval
-    for both position and velocity. In another figure, plots the variances of each state 
-    variable over time. The initial covariances are 0 in this model, and therefore are 
-    not plotted."""
+    for both position and velocity. """
 
-    states, variances = kalman_filter(num_trials, x_init, y_init, a_x, a_y)
+    states, _ = kalman_filter(num_trials, x_init, y_init, a_x, a_y)
     
     fig = plt.figure(num=1,figsize=(12, 10), dpi=100)
     estimates = generate_data.generate_true_values(num_trials,0.001,x_init,y_init, a_x, a_y)
@@ -116,7 +114,9 @@ def plot_states(num_trials, x_init, y_init, a_x, a_y):
 
 
 def plot_variances(num_trials, x_init, y_init, a_x, a_y):
-    states, variances = kalman_filter(num_trials, x_init, y_init, a_x, a_y)
+    """ Plots the variances of each state variable over time. The covariances are initally 0 
+    in this model, and therefore aren't plotted."""
+    _, variances = kalman_filter(num_trials, x_init, y_init, a_x, a_y)
 
     fig2 = plt.figure(num=2,figsize=(12,10),dpi=100)
 
@@ -144,4 +144,5 @@ def plot_variances(num_trials, x_init, y_init, a_x, a_y):
 
 
 # num_trials=1000, x_init=2, y_init=2, a_x = a_y = 0.1
+plot_states(1000,2,2, 2, 2)
 plot_variances(1000,2,2, 2, 2)
