@@ -2,6 +2,7 @@ import numpy as np
 import generate_data
 import matplotlib.pyplot as plt
 
+
 def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
     """ kalman_filter() applies a basic Kalman filter on the simulated noisy output from generate_data.py. 
     The velocity is held constant at 2 m/s. This value can be changed in the generate_values.py source. 
@@ -74,8 +75,8 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
                            [P[3,3]]])
         variances[:,[i]] = varianceToSave
 
-        
     return state, variances
+
 
 def plot_states(num_trials, x_init, y_init, a_x, a_y):
     """ Calls kalman_filter() and plots the prediction and correction at every time interval
@@ -144,5 +145,5 @@ def plot_variances(num_trials, x_init, y_init, a_x, a_y):
 
 
 # num_trials=1000, x_init=2, y_init=2, a_x = a_y = 0.1
-plot_states(1000,2,2, 2, 2)
-plot_variances(1000,2,2, 2, 2)
+# plot_states(1000,2,2, 2, 2)
+# plot_variances(1000,2,2, 2, 2)
