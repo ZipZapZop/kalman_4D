@@ -2,7 +2,7 @@ import numpy as np
 import generate_data
 import matplotlib.pyplot as plt
 
-def kalman_filter(num_trials, x_init, y_init):
+def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
     """ kalman_filter() applies a Kalman filter on the simulated noisy output from generate_data.py. 
     The velocity is held constant at 2 m/s. This value can be changed in the generate_values.py source. 
     There is assumed to be no noise in the prediction step of the filter and hence, the process noise covariance matrix
@@ -11,15 +11,20 @@ def kalman_filter(num_trials, x_init, y_init):
     """
 
     dt = 0.001
+    dt_sq = dt**2
     # std_dev_x and std_dev_y of sensors is 3m
     # generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init)
-    noisy_readings = generate_data.generate_noisy_values(num_trials, dt, 2, 2, x_init,y_init)   
+    noisy_readings = generate_data.generate_noisy_values(num_trials, dt, 2, 2, x_init,y_init, a_x, a_y)   
 
     A = np.array([[1, 0, dt, 0],
                 [0, 1, 0, dt],
                 [0, 0, 1, 0 ],
                 [0, 0, 0, 1 ]])
 
+    B = np.array([[0.5*(dt_sq), 0],
+                  [0, 0.5*(dt_sq)],
+                  [dt, 0],
+                  [0,dt]])
     H = np.eye(4)
 
     # Init var of x and y are large because uncertain of original position.
@@ -43,8 +48,11 @@ def kalman_filter(num_trials, x_init, y_init):
     # initialize state
     state[:, [0]] = np.array([[0, 0, x_init, y_init]]).T
 
+    u = np.array([[a_x],
+                  [a_y]])
+
     for i in range(1, num_trials):
-        state[:,[i]] = np.dot(A,state[:, [i - 1]]) + np.zeros((4,1)) # the predicted state noise is set to 0
+        state[:,[i]] = np.dot(A,state[:, [i - 1]]) +  np.dot(B,u) + np.zeros((4,1)) # the predicted state noise is set to 0
         P = np.dot(np.dot(A,P),A.T) + Q
 
         # gain
@@ -59,13 +67,13 @@ def kalman_filter(num_trials, x_init, y_init):
 
     return state
 
-def plot_kalman(num_trials, x_init, y_init):
+def plot_kalman(num_trials, x_init, y_init, a_x, a_y):
     """ Calls kalman_filter() and plots the prediction and correction at every time interval
     for both position and velocity. """
 
     fig = plt.figure(num=None,figsize=(12, 10), dpi=100)
-    states = kalman_filter(num_trials, x_init, y_init)
-    estimates = generate_data.generate_true_values(num_trials,0.001,x_init,y_init,x_y_only=False)
+    states = kalman_filter(num_trials, x_init, y_init, a_x, a_y)
+    estimates = generate_data.generate_true_values(num_trials,0.001,x_init,y_init, a_x, a_y)
 
     ax1 = fig.add_subplot(221)  # x values
     plt.plot(states[0],label = 'Predicted values')
@@ -93,5 +101,5 @@ def plot_kalman(num_trials, x_init, y_init):
     
     plt.show()
 
-# num_trials=1000, x_init=2, y_init=2
-plot_kalman(1000,2,2)
+# num_trials=1000, x_init=2, y_init=2, a_x = a_y = 0.1
+plot_kalman(1000,2,2, 2, 2)
