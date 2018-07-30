@@ -15,7 +15,7 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
     dt_sq = dt**2
     # std_dev_x and std_dev_y of sensors is 3m
     # generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init)
-    noisy_readings = generate_data.generate_noisy_values(num_trials, dt, 20, 20, x_init,y_init, a_x, a_y)   
+    noisy_readings = generate_data.generate_noisy_values(num_trials, dt, 3, 3, x_init,y_init, a_x, a_y)   
 
     A = np.array([[1, 0, dt, 0],
                 [0, 1, 0, dt],
@@ -124,26 +124,26 @@ def plot_variances(num_trials, x_init, y_init, a_x, a_y):
     bx1 = fig2.add_subplot(221)
     plt.plot(variances[0])
     plt.yscale('log')
-    bx1.set_title('${\sigma_x}^2$')
+    bx1.set_title('${\sigma_x}^2$ over time')
     
     bx2 = fig2.add_subplot(222, sharex=bx1)
     plt.plot(variances[1])
     plt.yscale('log')
-    bx2.set_title('${\sigma_y}^2$')
+    bx2.set_title('${\sigma_y}^2$ over time')
 
     bx3 = fig2.add_subplot(223, sharex=bx1)
     plt.plot(variances[2])
     plt.yscale('log')
-    bx3.set_title('${\sigma_{v_x}}^2$')
+    bx3.set_title('${\sigma_{v_x}}^2$ over time')
 
     bx4 = fig2.add_subplot(224, sharex=bx1)
     plt.plot(variances[3])
     plt.yscale('log')
-    bx4.set_title('${\sigma_{v_y}}^2$')
+    bx4.set_title('${\sigma_{v_y}}^2$ over time')
 
     plt.show()
 
 
 # num_trials=1000, x_init=2, y_init=2, a_x = a_y = 0.1
-# plot_states(1000,2,2, 2, 2)
-# plot_variances(1000,2,2, 2, 2)
+plot_states(1000,2,2, 2, 2)
+plot_variances(1000,2,2, 2, 2)
