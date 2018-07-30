@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 
 
 def calculate_differences(num_trials, x_init, y_init, a_x, a_y, dt):
+    """ Simply subtracts values calculated from a kalman filter and theoretical values. This tells us how impactful the kalman filter was at a certain point in time. The
+    difference is calculated in the x as well as the y dimension. """
     filtered, _ = kalman.kalman_filter(num_trials,x_init,y_init,a_x,a_y) # returns x, y, and v_x, v_y
     true_vals = generate_data.generate_true_values(num_trials, dt, x_init,y_init, a_x, a_y, x_y_only=True)
 
@@ -19,12 +21,16 @@ def calculate_differences(num_trials, x_init, y_init, a_x, a_y, dt):
 
     return differences
 
-x = calculate_differences(10000,0,0,0.1,0.1,0.001)
-print(x)
-print('\n')
 
-a = plt.figure()
-plt.plot(x[0], label='x')
-plt.plot(x[1], label='y')
-plt.legend()
-plt.show()
+def plot_differences(num_trials, x_init, y_init, a_x, a_y, dt):
+    """ Plots a graph displaying the differences calculated in calculate_differences. """
+    x = calculate_differences(num_trials, x_init, y_init, a_x , y_init, dt)
+
+    a = plt.figure()
+    plt.plot(x[0], label='Difference in x')
+    plt.plot(x[1], label='Difference in y')
+    plt.legend()
+    plt.show()
+
+
+plot_differences(10000,0,0,0.1,0.1,0.001)
