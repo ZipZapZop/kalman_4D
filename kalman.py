@@ -38,9 +38,7 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
                     [0, 0, 0, 0.1]])
     
     variances = np.zeros((4,num_trials))
-
     Q = np.zeros(4) # assuming no process noise
-
     R = np.array([ [9, 0, 0, 0],
                     [0, 9, 0, 0],
                     [0, 0, 0.01, 0],
@@ -145,5 +143,5 @@ def plot_variances(num_trials, x_init, y_init, a_x, a_y):
 
 
 # num_trials=1000, x_init=2, y_init=2, a_x = a_y = 0.1
-plot_states(1000,2,2, 2, 2)
-plot_variances(1000,2,2, 2, 2)
+# plot_states(1000,2,2, 2, 2)
+# plot_variances(1000,2,2, 2, 2)
