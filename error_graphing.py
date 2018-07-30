@@ -32,11 +32,12 @@ def plot_differences(num_trials, x_init, y_init, a_x, a_y, dt):
     plt.legend()
     plt.show()
 
-
 # plot_differences(10000,0,0,0.1,0.1,0.001)
 
 
 def mean_squared_error(num_trials, x_init, y_init, a_x, a_y, dt, q):
+    """ Calculates the mean squared error at each time interval. The filter is run
+    q times and an error value is calculated with these values. """
     all_diff = np.zeros((2, num_trials, q))
     # run error calculator for q trials, the more trials, the more accurate
     for i in range(0, q):
@@ -55,6 +56,8 @@ def mean_squared_error(num_trials, x_init, y_init, a_x, a_y, dt, q):
     for i in range(0, num_trials):
         sum_x = 0
         sum_y = 0
+        # horrible cache-wise because reading in column-order
+        # TODO: rearrange all_diff array so that calculations are in column order?
         for j in range(0,q):
             sum_x = sum_x + all_diff[0, i, j]
             sum_y = sum_y + all_diff[1, i, j]
@@ -64,12 +67,18 @@ def mean_squared_error(num_trials, x_init, y_init, a_x, a_y, dt, q):
 
     return MSE
 
-x = mean_squared_error(1000, 0, 0, 0.1,0.1,0.001, 100)
-print(x)
-print(type(x))
-print(np.shape(x))
+def plot_MSE(num_trials, x_init, y_init, a_x, a_y, dt, q):
+    x = mean_squared_error(num_trials, x_init, y_init, a_x, a_y, dt, q)
+    print(x)
+    print(type(x))
+    print(np.shape(x))
 
-plt.figure()
-plt.plot(x[0])
-plt.plot(x[1])
-plt.show()
+    plt.figure()
+    plt.plot(x[0])
+    plt.plot(x[1])
+    plt.xlabel('time')
+    plt.ylabel('MSE')
+    plt.show()
+
+
+plot_MSE(1000, 0, 0, 0.1,0.1,0.001, 100)
