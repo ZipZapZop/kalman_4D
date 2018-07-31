@@ -26,7 +26,7 @@ def plot_differences(num_trials, x_init, y_init, a_x, a_y, dt):
     """ Plots a graph displaying the differences calculated in calculate_differences. """
     x = calculate_differences(num_trials, x_init, y_init, a_x , y_init, dt)
 
-    a = plt.figure()
+    plt.figure()
     plt.plot(x[0], label='Difference in x')
     plt.plot(x[1], label='Difference in y')
     plt.legend()
@@ -74,10 +74,12 @@ def plot_MSE(num_trials, x_init, y_init, a_x, a_y, dt, q):
     print(np.shape(x))
 
     plt.figure()
-    plt.plot(x[0])
-    plt.plot(x[1])
+    plt.plot(x[0], label='position in x')
+    plt.plot(x[1], label='position in y')
     plt.xlabel('time')
     plt.ylabel('MSE')
+    plt.title('Mean Squared Error (MSE) of position')
+    plt.legend()
     plt.show()
 
 
