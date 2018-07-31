@@ -78,7 +78,7 @@ def plot_MSE(num_trials, x_init, y_init, a_x, a_y, dt, q):
     plt.plot(x[1], label='position in y')
     plt.xlabel('time')
     plt.ylabel('MSE')
-    plt.title('Mean Squared Error (MSE) of position')
+    plt.title('Mean Squared Error (MSE) of positionY')
     plt.legend()
     plt.show()
 
