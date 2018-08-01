@@ -34,19 +34,49 @@ def plot_differences(num_trials, x_init, y_init, a_x, a_y, dt):
 
 # plot_differences(10000,0,0,0.1,0.1,0.001)
 
+def MSE(num_trials, x_init, y_init, a_x, a_y, dt, q):
+    all_trial_data = np.zeros((2, num_trials, q))
+    for i in range(0,q):
+        all_trial_data[:,:,i] = calculate_differences(num_trials, x_init, y_init, a_x, a_y, dt)
+    
+    for i in range(0, num_trials):
+        all_trial_data[:,i,:] = all_trial_data[:,i,:]**2
+
+    summed_error = np.zeros((2, num_trials))
+
+    for i in range(0,num_trials):
+        trial_sum_x = all_trial_data[0,i,:].sum()
+        trial_sum_y = all_trial_data[1,i,:].sum()
+        MSE_x = trial_sum_x/q
+        MSE_y = trial_sum_y/q
+        summed_error[0,i] = MSE_x
+        summed_error[1,i] = MSE_y
+
+    return summed_error
+
+# MSE(100, 0, 0, 0.1,0.1,0.001, 10)
 
 def mean_squared_error(num_trials, x_init, y_init, a_x, a_y, dt, q):
     """ Calculates the mean squared error at each time interval. The filter is run
     q times and an error value is calculated with these values. """
+
+    # 3D array that stores in each index the sum of all errors from all previous indices
+
     all_diff = np.zeros((2, num_trials, q))
-    # run error calculator for q trials, the more trials, the more accurate
+
+    # Run KF and therefore error calculator for q trials.
+    # The more trials, the more accurate.
+    # Calculate all the differences for the qth trial, square each one, and store
+    # each in an array for later use.
     for i in range(0, q):
-        # calculate all the differences for the qth trial, squares each one, and stores
-        # each in an array for later use
         differences = calculate_differences(num_trials, x_init, y_init, a_x, a_y, dt)
 
-        # squares each difference value and adds it to all previous difference values
-        # stores the new value in the nth time interval
+        # Squares each difference value and adds it to all previous difference values.
+        # Stores the new value in the nth time interval
+
+        # initial values
+        all_diff[0,0,0] = differences[0,0]
+        all_diff[1,0,0] = differences[1,0]
         for j in range(1, num_trials):
             all_diff[0, j, i] = all_diff[0, j - 1, i] + differences[0, j]**2
             all_diff[1, j, i] = all_diff[1, j - 1, i] + differences[1, j]**2
@@ -68,7 +98,7 @@ def mean_squared_error(num_trials, x_init, y_init, a_x, a_y, dt, q):
     return MSE
 
 def plot_MSE(num_trials, x_init, y_init, a_x, a_y, dt, q):
-    x = mean_squared_error(num_trials, x_init, y_init, a_x, a_y, dt, q)
+    x = MSE(num_trials, x_init, y_init, a_x, a_y, dt, q)
     print(x)
     print(type(x))
     print(np.shape(x))
@@ -78,7 +108,7 @@ def plot_MSE(num_trials, x_init, y_init, a_x, a_y, dt, q):
     plt.plot(x[1], label='position in y')
     plt.xlabel('time')
     plt.ylabel('MSE')
-    plt.title('Mean Squared Error (MSE) of positionY')
+    plt.title('Mean Squared Error (MSE) of position')
     plt.legend()
     plt.show()
 
