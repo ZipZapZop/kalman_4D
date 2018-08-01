@@ -39,12 +39,10 @@ def MSE(num_trials, x_init, y_init, a_x, a_y, dt, q):
     for i in range(0,q):
         all_trial_data[:,:,i] = calculate_differences(num_trials, x_init, y_init, a_x, a_y, dt)
     
-    for i in range(0, num_trials):
-        all_trial_data[:,i,:] = all_trial_data[:,i,:]**2
-
     summed_error = np.zeros((2, num_trials))
 
     for i in range(0,num_trials):
+        all_trial_data[:,i,:] = all_trial_data[:,i,:]**2
         trial_sum_x = all_trial_data[0,i,:].sum()
         trial_sum_y = all_trial_data[1,i,:].sum()
         MSE_x = trial_sum_x/q
