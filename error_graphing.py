@@ -35,6 +35,7 @@ def plot_differences(num_trials, x_init, y_init, a_x, a_y, dt):
 # plot_differences(10000,0,0,0.1,0.1,0.001)
 
 def MSE(num_trials, x_init, y_init, a_x, a_y, dt, q):
+    """ Calculates the mean squared error at each time interval. The filter is run q times and an error value is calculated with these values. """
     all_trial_data = np.zeros((2, num_trials, q))
     for i in range(0,q):
         all_trial_data[:,:,i] = calculate_differences(num_trials, x_init, y_init, a_x, a_y, dt)
@@ -51,8 +52,6 @@ def MSE(num_trials, x_init, y_init, a_x, a_y, dt, q):
         summed_error[1,i] = MSE_y
 
     return summed_error
-
-# MSE(100, 0, 0, 0.1,0.1,0.001, 10)
 
 def mean_squared_error(num_trials, x_init, y_init, a_x, a_y, dt, q):
     """ Calculates the mean squared error at each time interval. The filter is run
