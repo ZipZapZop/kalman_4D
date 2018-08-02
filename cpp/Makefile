@@ -8,6 +8,6 @@ kalman:
 generate_data:
 	$(CC) -o gen_data generate_data.cpp
 clean:
-	-rm kalman.o generate_data.o kalman gen_data
+	-rm kalman gen_data
 all:
 	kalman
