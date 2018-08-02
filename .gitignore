@@ -1,4 +1,7 @@
 .vscode/launch.json
 .vscode/settings.json
-__pycache__/kalman.cpython-36.pyc
 Eigen
+kalman
+kalman.o
+Makefile~
+cpp/gen_data
