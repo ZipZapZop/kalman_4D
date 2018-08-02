@@ -1,7 +1,7 @@
 CC=g++
 
 .PHONY: clean all
-CFLAGS = -std=c++11
+CFLAGS = -std=c++11 -msse2
 
 kalman: 
 	$(CC) -o kalman kalman.cpp generate_data.cpp
