@@ -54,3 +54,10 @@ def generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init, 
         sensor_values[3,[i]] = np.random.normal(0,std_dev_y) + x[3,[i]]
         i += 1
     return sensor_values
+def plot(num_trials, dt, x_init, y_init, a_x, a_y):
+    noisy_readings = generate_noisy_values(num_trials, dt, 3, 3, x_init,y_init, a_x, a_y)
+    plt.figure()
+    plt.plot(noisy_readings[0])
+    plt.show()
+
+# plot(1000,0.001,1,1,0.2,0.2)
