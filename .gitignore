@@ -6,3 +6,6 @@ kalman.o
 Makefile~
 cpp/gen_data
 /home/daad/Documents/kalman_4D/cpp/test_eigen
+.vscode/c_cpp_properties.json
+cpp/noisy_data_y.csv
+cpp/noisy_data_x.csv
