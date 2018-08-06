@@ -23,7 +23,7 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double a_x,
          dt, 0,
          0, dt;
     
-    Matrix4i H = Matrix4i::Identity();
+    Matrix4d H = Matrix4d::Identity();
 
     // Init var of x and y are large because uncertain of original position.
     // Vel_x and vel_y are 0.1.
@@ -38,9 +38,9 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double a_x,
     Matrix4Xd variances(4, num_trials);
 
 
-    Matrix4i Q = Matrix4i::Zero();  // assuming a lack of process noise
+    Matrix4d Q = Matrix4d::Zero();  ////assuming a lack of process noise
 
-    Matrix4i R;
+    Matrix4d R;
     R << 9, 0, 0, 0,
          0, 9, 0, 0,
          0, 0, 0.01, 0,
@@ -49,7 +49,7 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double a_x,
     Matrix4Xd state(4, num_trials);
 
     state.col(0) = Vector4d(0, 0, x_init, y_init); // init state
-    Vector4i W = Vector4i::Zero(); // process noise is set to 0
+    Vector4d W = Vector4d::Zero(); // process noise is set to 0
     Vector2d u(a_x, a_y);
     MatrixXd Bu = B*u;
     for(int i = 1; i < num_trials; ++i) {
@@ -58,23 +58,49 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double a_x,
 
         // gain
         Matrix4d K_num = P*(H.transpose());
-        Matrix4d K_denom = (H*P)*H.transpose() + R;
+        Matrix4d K_denom = (H*P);
+        K_denom = K_denom*H.transpose();
+        K_denom = K_denom * R;
         Matrix4d K = K_num*(K_denom.inverse());
 
         // update
-        Vector4i innovation = noisy_readings.col(i) - H*state.col(i-1);
+        Vector4d innovation = noisy_readings.col(i) - H*state.col(i-1);
         state.col(i) = state.col(i) + K*innovation;
-        P = (Matrix4i::Identity() - K*H)*P + Matrix4i::Zero();
+        P = (Matrix4d::Identity() - K*H)*P + Matrix4d::Zero();
 
         // save the variances at each step
         variances.col(i) = P.diagonal();
     }
-
     return state;
 
 }
 
-int main() {
-    
+void filtered_to_csv(int num_trials, double x_init, double y_init, double a_x, double a_y) {
+    MatrixXd filtered = kalman_filter(num_trials,  x_init, y_init, a_x, a_y);
+
+    std::ofstream data_out;
+    data_out.open("filtered_data_x.csv");
+
+    for(int i = 0; i < num_trials; ++i)
+        data_out << filtered(0,i) << '\n';
+    data_out.close();
+
+    data_out.open("filtered_data_y.csv");
+    for(int i = 0; i < num_trials; ++i)
+        data_out << filtered(1,i) << '\n';
+    data_out.close();
 }
 
+
+int main() {
+    int num_trials = 1000;
+    double dt = 0.001;
+    double x_init = 2;
+    double y_init = 2;
+    double std_dev_x = 3;
+    double std_dev_y = 3;
+    double a_x = 0.1;
+    double a_y = 0.1;
+
+    filtered_to_csv(num_trials,  x_init, y_init, a_x, a_y);
+}
