@@ -25,7 +25,6 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double a_x,
     
     Matrix4i H = Matrix4i::Identity();
 
-
     // Init var of x and y are large because uncertain of original position.
     // Vel_x and vel_y are 0.1.
     // All covariances are equal to 0 as each state var is assumed independent.
@@ -36,6 +35,9 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double a_x,
          0, 0, 0.1, 0,
          0, 0, 0, 0.1;
     
+    Matrix4Xd variances(4, num_trials);
+
+
     Matrix4i Q = Matrix4i::Zero();  // assuming a lack of process noise
 
     Matrix4i R;
@@ -55,8 +57,20 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double a_x,
         P = (A*P)*A.transpose() + Q;
 
         // gain
+        Matrix4d K_num = P*(H.transpose());
+        Matrix4d K_denom = (H*P)*H.transpose() + R;
+        Matrix4d K = K_num*(K_denom.inverse());
 
+        // update
+        Vector4i innovation = noisy_readings.col(i) - H*state.col(i-1);
+        state.col(i) = state.col(i) + K*innovation;
+        P = (Matrix4i::Identity() - K*H)*P + Matrix4i::Zero();
+
+        // save the variances at each step
+        variances.col(i) = P.diagonal();
     }
+
+    return state;
 
 }
 
