@@ -52,19 +52,15 @@ MatrixXd generate_noisy_values(int num_trials, double dt, double std_dev_x, doub
 } 
 
 void export_noisy_to_csv(int num_trials, double dt, double std_dev_x, double std_dev_y, double x_init, double y_init, double a_x, double a_y) {
-    MatrixXd r = generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init, a_x, a_y);
-
+    MatrixXd noisy = generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init, a_x, a_y);
     std::ofstream data_out;
     data_out.open("noisy_data_x.csv");
     for(int i = 0; i < num_trials; ++i)
-        data_out << r(0,i) << '\n';
+        data_out << noisy(0,i) << '\n';
     data_out.close();
 
     data_out.open("noisy_data_y.csv");
     for(int i = 0; i < num_trials; ++i)
-        data_out << r(1,i) << '\n';
+        data_out << noisy(1,i) << '\n';
     data_out.close();
 }
-
-
-
