@@ -62,7 +62,7 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
         K = np.dot(K_num,np.linalg.inv(K_denom))
 
         # Update
-        innovation = noisy_readings[:,[i]] - np.dot(H,state[:,[i-1]])
+        innovation = noisy_readings[:,[i]] - np.dot(H,state[:,[i]])
         state[:,[i]] = state[:,[i]]+ np.vstack(np.dot(K,innovation))
         P = np.dot(np.eye(4) - np.dot(K,H),P) + np.zeros((4,4))
 
@@ -116,7 +116,7 @@ def plot_variances(num_trials, x_init, y_init, a_x, a_y):
     """ Plots the variances of each state variable over time. The covariances are initally 0 
     in this model, and therefore aren't plotted."""
     _, variances = kalman_filter(num_trials, x_init, y_init, a_x, a_y)
-
+    
     fig2 = plt.figure(num=2,figsize=(12,10),dpi=100)
 
     bx1 = fig2.add_subplot(221)
@@ -143,5 +143,5 @@ def plot_variances(num_trials, x_init, y_init, a_x, a_y):
 
 
 # num_trials=1000, x_init=2, y_init=2, a_x = a_y = 0.1
-# plot_states(1000,2,2, 2, 2)
-# plot_variances(1000,2,2, 2, 2)
+plot_states(1000,2,2, 2, 2)
+plot_variances(1000,2,2, 2, 2)
