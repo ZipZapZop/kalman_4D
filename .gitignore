@@ -13,3 +13,5 @@ cpp/generate_data.hpp.gch
 cpp/generate_data.o
 cpp/generate_data_main.o
 py/__pycache__/generate_data.cpython-36.pyc
+cpp/filtered_data_y.csv
+cpp/filtered_data_x.csv
