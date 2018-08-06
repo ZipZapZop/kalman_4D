@@ -86,7 +86,17 @@ void filtered_to_csv() {
         data_out << filtered(1,i) << '\n';
     data_out.close();
 
-    
+    data_out.open("true_x.csv");
+    for(int i = 0; i < num_trials; ++i) {
+        data_out << ideal(0, i) << '\n';
+    }
+    data_out.close();
+
+    data_out.open("true_ý.csv");
+    for(int i = 0; i < num_trials; ++i) {
+        data_out << ideal(1, i) << '\n';
+    }
+    data_out.close();
 }
 
 int main() {
