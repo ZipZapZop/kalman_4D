@@ -1,22 +1,29 @@
-#include <iostream>
 #include <eigen3/Eigen/Dense>
 #include "generate_data.hpp"
 
 using namespace Eigen;
 
+/*  kalman_filter() applies a Kalman filter on the simulated noisy output from 
+    generate_data.cpp. 
+    There is assumed to be no noise in the prediction step of the filter and hence, the process 
+    noise covariance matrix and the predicted state noise matrix are set to zero matrices.
+    Measurements are taken at every 0.001 second (dt). This can be changed in the kalman.cpp 
+    source.*/
 MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double std_dev_x, double std_dev_y, double a_x, double a_y) {
+    // time interval of 0.001 seconds; filter is run with 1000 intervals (1 second total)
     double dt = 0.001;
     double dt_sq = dt*dt;
 
-    // assuming std_dev_x and std_dev_y of sensors is 3m
     Matrix4Xd noisy_readings = generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init, a_x, a_y);
 
+    // relates previous step with current state; in this case, comes from physics equations
     Matrix4d A;
     A << 1, 0, dt, 0,
          0, 1, 0, dt, 
          0, 0, 1, 0,
          0, 0, 0, 1;
     
+    // just like A, transforms between prev and curr state; also from physics equations
     MatrixXd B(4,2);
     B << 0.5*dt_sq,     0,
          0,             0.5*dt_sq,
@@ -34,6 +41,7 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double std_
          0, 0, 0.01, 0,
          0, 0, 0, 0.01;
 
+    // matrix to hold all states over the interval
     Matrix4Xd state(4, num_trials);
     state.col(0) = Vector4d(0, 0, x_init, y_init); // init state
 
@@ -60,10 +68,11 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double std_
     Vector2d u(a_x, a_y);
     MatrixXd Bu = B*u;
     for(int i = 1; i < num_trials; ++i) {
+        // calculate new prediction state
         state.col(i) = A*state.col(i - 1) + Bu + W;
         P = (A*P)*A.transpose() + Q;
 
-        // gain
+        // gain calculation
         Matrix4d K_num = P*(H.transpose());
         Matrix4d K_denom = (H*P);
         K_denom = H*K_denom*H.transpose();
@@ -81,7 +90,7 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double std_
     return state;
 
 }
-
+/* Runs the filter and outputs .csv files with all state data over time */
 void filtered_to_csv(int num_trials, double x_init, double y_init, double std_dev_x, double std_dev_y, double a_x, double a_y) {
     MatrixXd filtered = kalman_filter(num_trials,  x_init, y_init, std_dev_x, std_dev_y, a_x, a_y);
     MatrixXd ideal = generate_true_values(num_trials, 0.001, x_init, y_init, a_x, a_y);
