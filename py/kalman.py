@@ -60,7 +60,7 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
         K_num = np.dot(P, H.T)
         K_denom = np.dot(np.dot(H,P),H.T) + R
         K = np.dot(K_num,np.linalg.inv(K_denom))
-
+    
         # Update
         innovation = noisy_readings[:,[i]] - np.dot(H,state[:,[i]])
         state[:,[i]] = state[:,[i]]+ np.vstack(np.dot(K,innovation))
