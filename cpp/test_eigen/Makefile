@@ -8,4 +8,4 @@ test.o: test.cpp
 generate_data.o: generate_data.hpp generate_data.cpp
 	g++ $(CFLAGS) -c generate_data.cpp
 clean:
-	-rm test %*.csv test.o
+	rm -rf *.csv *.o test
