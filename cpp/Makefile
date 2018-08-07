@@ -19,10 +19,10 @@ generate_data.o:  generate_data.hpp generate_data.cpp
 	g++ $(CFLAGS) -c generate_data.cpp
 
 clean:
-	-rm kalman kalman.o gen_data generate_data.o filtered_data_x.csv filtered_data_y.csv
+	-rm kalman *.csv *.o
 
-clean generate_data:
-	-rm generate_data.o generate_data noisy_data_x.csv noisy_data_y.csv
+# clean generate_data:
+# 	-rm generate_data.o generate_data noisy_data_x.csv noisy_data_y.csv
 
 all:
 	kalman
