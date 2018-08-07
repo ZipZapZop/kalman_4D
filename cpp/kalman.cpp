@@ -31,8 +31,11 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double std_
     Matrix4d P;
     P << 500, 0, 0, 0,
          0, 500, 0, 0,
-         0, 0, 0.1, 0,
-         0, 0, 0, 0.1;
+         0, 0, 0.01, 0,
+         0, 0, 0, 0.01;
+
+    Matrix4Xd state(4, num_trials);
+    state.col(0) = Vector4d(0, 0, x_init, y_init); // init state
 
     //assuming a lack of process noise
     Vector4d W = Vector4d::Zero();
@@ -54,9 +57,6 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double std_
          0, 0, 0.01, 0,
          0, 0, 0, 0.01;
 
-    Matrix4Xd state(4, num_trials);
-    state.col(0) = Vector4d(0, 0, x_init, y_init); // init state
-
     Vector2d u(a_x, a_y);
     MatrixXd Bu = B*u;
     for(int i = 1; i < num_trials; ++i) {
@@ -66,14 +66,14 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double std_
         // gain
         Matrix4d K_num = P*(H.transpose());
         Matrix4d K_denom = (H*P);
-        K_denom = K_denom*H.transpose();
-        K_denom = K_denom * R;
+        K_denom = H*K_denom*H.transpose();
+        K_denom = K_denom + R;
         Matrix4d K = K_num*(K_denom.inverse());
 
         // update
-        Vector4d innovation = noisy_readings.col(i) - H*state.col(i-1);
-        state.col(i) = state.col(i) + K*innovation;
-        P = (Matrix4d::Identity() - K*H)*P + Matrix4d::Zero();
+        Vector4d innovation = noisy_readings.col(i) - H*state.col(i);
+        state.col(i) += K*innovation;
+        P = (Matrix4d::Identity() - (K*H))*P;
 
         // save the variances at each step
         variances.col(i) = P.diagonal();
@@ -84,24 +84,36 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double std_
 
 void filtered_to_csv(int num_trials, double x_init, double y_init, double std_dev_x, double std_dev_y, double a_x, double a_y) {
     MatrixXd filtered = kalman_filter(num_trials,  x_init, y_init, std_dev_x, std_dev_y, a_x, a_y);
+    MatrixXd ideal = generate_true_values(num_trials, 0.001, x_init, y_init, a_x, a_y);
 
     std::ofstream data_out;
-    data_out.open("filtered_data_x.csv");
+    data_out.open("test_x.csv");
 
     for(int i = 0; i < num_trials; ++i)
         data_out << filtered(0,i) << '\n';
     data_out.close();
 
-    data_out.open("filtered_data_y.csv");
+    data_out.open("test_y.csv");
     for(int i = 0; i < num_trials; ++i)
         data_out << filtered(1,i) << '\n';
+    data_out.close();
+
+    data_out.open("ideal_x.csv");
+    for(int i = 0; i < num_trials; ++i) {
+        data_out << ideal(0, i) << '\n';
+    }
+    data_out.close();
+
+    data_out.open("ideal_y.csv");
+    for(int i = 0; i < num_trials; ++i) {
+        data_out << ideal(1, i) << '\n';
+    }
     data_out.close();
 }
 
 
 int main() {
     int num_trials = 1000;
-    double dt = 0.001;
     double x_init = 1;
     double y_init = 1;
     double std_dev_x = 3;
