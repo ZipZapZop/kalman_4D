@@ -4,12 +4,12 @@
 
 using namespace Eigen;
 
-MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double a_x, double a_y) {
+MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double std_dev_x, double std_dev_y, double a_x, double a_y) {
     double dt = 0.001;
     double dt_sq = dt*dt;
 
     // assuming std_dev_x and std_dev_y of sensors is 3m
-    Matrix4Xd noisy_readings = generate_noisy_values(num_trials, dt, 3, 3, x_init, y_init, a_x, a_y);
+    Matrix4Xd noisy_readings = generate_noisy_values(num_trials, dt, std_dev_x, std_dev_y, x_init, y_init, a_x, a_y);
 
     Matrix4d A;
     A << 1, 0, dt, 0,
@@ -46,8 +46,8 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double a_x,
 
     // sensor noise covariance matrix
     // std_dev_x and std_dev_y is 3m; std_dev_vx and std_dev_vy are sqrt(0.01)
-    // this is definitely too low of a variance
-    // TODO: Play around with this variance to see effect
+    // this is definitely too low of a variance in real world scenario
+    // don't think this will make too much of a difference in the prediction however
     Matrix4d R;
     R << 9, 0, 0, 0,
          0, 9, 0, 0,
@@ -82,8 +82,8 @@ MatrixXd kalman_filter(int num_trials, double x_init, double y_init, double a_x,
 
 }
 
-void filtered_to_csv(int num_trials, double x_init, double y_init, double a_x, double a_y) {
-    MatrixXd filtered = kalman_filter(num_trials,  x_init, y_init, a_x, a_y);
+void filtered_to_csv(int num_trials, double x_init, double y_init, double std_dev_x, double std_dev_y, double a_x, double a_y) {
+    MatrixXd filtered = kalman_filter(num_trials,  x_init, y_init, std_dev_x, std_dev_y, a_x, a_y);
 
     std::ofstream data_out;
     data_out.open("filtered_data_x.csv");
@@ -109,5 +109,5 @@ int main() {
     double a_x = 2;
     double a_y = 2;
 
-    filtered_to_csv(num_trials, x_init, y_init, a_x, a_y);
+    filtered_to_csv(num_trials, x_init, y_init, std_dev_x, std_dev_y, a_x, a_y);
 }
