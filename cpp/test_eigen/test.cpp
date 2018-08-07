@@ -10,9 +10,6 @@ using namespace Eigen;
 const int num_trials = 1000;
 
 MatrixXd kalman_filter() {
-    MatrixXd x(4,num_trials);
-    Vector4d init(1, 1, 0, 0);
-    x.col(0) = init;
     double dt = 0.001;
     double a_x = 10;
     double a_y = 5;
