@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import csv
 
 def print_graph():
-    with open('test_x.csv','r'):
-        lines = [line.rstrip(' ') for line in open('test_x.csv')]
+    with open('filtered_data_x.csv','r'):
+        lines = [line.rstrip(' ') for line in open('filtered_data_x.csv')]
         lines = list(map(float, lines))
     
     plt.figure()
