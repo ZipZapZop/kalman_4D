@@ -29,7 +29,7 @@ def print_graph():
     plt.plot(filtered_y, label='Estimated values in y')
     plt.plot(ideal_x, label='Predicted values in x')
     plt.plot(ideal_y, label='Predicted values in y')
-
+    plt.title('Filtered vs. Ideal values from a Kalman filter')
     fig.legend()
     
     plt.show()
