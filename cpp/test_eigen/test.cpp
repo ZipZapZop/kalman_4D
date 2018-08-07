@@ -14,10 +14,11 @@ MatrixXd kalman_filter() {
     Vector4d init(1, 1, 0, 0);
     x.col(0) = init;
     double dt = 0.001;
-    Vector2d u(2, 2);
+    double a_x = 10;
+    double a_y = 5;
+    Vector2d u(a_x, a_y);   // accel in x and y
 
-    Matrix4Xd noisy_readings = generate_noisy_values(num_trials, dt, 3, 3, 1, 1, 2, 2);
-
+    Matrix4Xd noisy_readings = generate_noisy_values(num_trials, dt, 3, 3, 1, 1, a_x, a_y);
 
     double dt_sq = dt*dt;
 
@@ -51,6 +52,7 @@ MatrixXd kalman_filter() {
     Matrix4d Q = Matrix4d::Zero(); 
     Matrix4d K;
     Vector4d innovation;
+
     for(int i = 1; i < num_trials; ++i) { 
         state.col(i) = A*state.col(i - 1) + B*u;
         P = (A*P)*A.transpose() + Q;
@@ -62,17 +64,15 @@ MatrixXd kalman_filter() {
         K = K_num*(K_denom.inverse());
 
         Vector4d innovation = noisy_readings.col(i) - H*state.col(i);
-        // std::cout << innovation << std::endl;
         state.col(i) += K*innovation;
         P = (Matrix4d::Identity() - (K*H))*P;
     }
-    // std::cout << state << std::endl;
     return state;
 }
 
 void filtered_to_csv() {
     MatrixXd filtered = kalman_filter();
-    MatrixXd ideal = generate_true_values(num_trials, 0.001, 1, 1, 2, 2);
+    MatrixXd ideal = generate_true_values(num_trials, 0.001, 1, 1, 10, 5);
 
     std::ofstream data_out;
     data_out.open("test_x.csv");
@@ -92,7 +92,7 @@ void filtered_to_csv() {
     }
     data_out.close();
 
-    data_out.open("ideal_ý.csv");
+    data_out.open("ideal_y.csv");
     for(int i = 0; i < num_trials; ++i) {
         data_out << ideal(1, i) << '\n';
     }
