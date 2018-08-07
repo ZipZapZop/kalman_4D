@@ -17,3 +17,7 @@ cpp/filtered_data_x.csv
 cpp/test_eigen/generate_data.o
 cpp/test_eigen/test.o
 cpp/test_eigen/test
+cpp/test_eigen/test_y.csv
+cpp/test_eigen/test_x.csv
+cpp/test_eigen/ideal_y.csv
+cpp/test_eigen/ideal_x.csv
