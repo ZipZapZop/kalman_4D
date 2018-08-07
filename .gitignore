@@ -21,3 +21,7 @@ cpp/test_eigen/test_y.csv
 cpp/test_eigen/test_x.csv
 cpp/test_eigen/ideal_y.csv
 cpp/test_eigen/ideal_x.csv
+cpp/ideal_x.csv
+cpp/ideal_y.csv
+cpp/test_x.csv
+cpp/test_y.csv
