@@ -86,8 +86,8 @@ def plot_states(num_trials, x_init, y_init, a_x, a_y):
     estimates = generate_data.generate_true_values(num_trials,0.001,x_init,y_init, a_x, a_y)
 
     ax1 = fig.add_subplot(221)  # x values
-    plt.plot(states[0],label = 'Predicted values')
-    plt.plot(estimates[0],label = 'Estimated values')
+    plt.plot(states[0],label = 'Filtered values')
+    plt.plot(estimates[0],label = 'Predicted values')
     handles, labels = ax1.get_legend_handles_labels()
     ax1.set_title('x position')
 
