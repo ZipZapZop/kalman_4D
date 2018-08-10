@@ -65,6 +65,8 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
         innovation = noisy_readings[:,[i]] - np.dot(H,state[:,[i]])
         state[:,[i]] = state[:,[i]]+ np.vstack(np.dot(K,innovation))
         P = np.dot(np.eye(4) - np.dot(K,H),P)
+        # ImKH = np.eye(4) - np.dot(K,H)
+        # P = np.dot(np.dot(ImKH, P), ImKH.T) + np.dot(np.dot(K,R),K.T)
 
         # save variances at each step
         varianceToSave = np.array([[P[0,0]],
