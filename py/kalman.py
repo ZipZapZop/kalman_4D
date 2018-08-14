@@ -39,6 +39,8 @@ def kalman_filter(num_trials, x_init, y_init, a_x, a_y):
     
     variances = np.zeros((4,num_trials))
     Q = np.zeros(4) # assuming no process noise
+    # Q = 0.001*np.dot(A, A.T)
+
     R = np.array([ [9, 0, 0, 0],
                     [0, 9, 0, 0],
                     [0, 0, 0.01, 0],
