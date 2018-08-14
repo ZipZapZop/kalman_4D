@@ -1,7 +1,7 @@
 CC=g++
 
 .PHONY: clean all
-CFLAGS = -std=c++11 -msse2 -Wall
+CFLAGS = -std=c++11 -msse2 -Wall -g
 
 kalman: kalman.o generate_data.o
 	g++ $(CFLAGS) -o kalman kalman.o generate_data.o
